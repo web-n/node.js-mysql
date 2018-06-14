@@ -101,7 +101,6 @@ var app = http.createServer(function(request,response){
       });
     } else if(pathname === '/update'){
       db.query('SELECT * FROM topic', function(error, topics){
-      // fs.readdir('./data', function(error, filelist){
         if(error){
           throw error;
         }
@@ -109,8 +108,6 @@ var app = http.createServer(function(request,response){
           if(error2){
             throw error2;
           }
-        // fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-          
           var list = template.list(topics);
           var html = template.HTML(topic[0].title, list,
             `
@@ -138,15 +135,10 @@ var app = http.createServer(function(request,response){
       });
       request.on('end', function(){
           var post = qs.parse(body);
-          var id = post.id;
-          var title = post.title;
-          var description = post.description;
-          fs.rename(`data/${id}`, `data/${title}`, function(error){
-            fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-              response.writeHead(302, {Location: `/?id=${title}`});
-              response.end();
-            })
-          });
+          db.query('UPDATE topic SET title=?, description=?, author_id=1 WHERE id=?', [post.title, post.description, post.id], function(error, result){
+            response.writeHead(302, {Location: `/?id=${post.id}`});
+            response.end();
+          })
       });
     } else if(pathname === '/delete_process'){
       var body = '';
