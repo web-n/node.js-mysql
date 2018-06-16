@@ -27,6 +27,8 @@ var app = http.createServer(function(request,response){
       author.home(request, response);
     } else if(pathname === '/author/create_process'){
       author.create_process(request, response);
+    } else if(pathname === '/author/update'){
+      author.update(request, response);
     } else {
       response.writeHead(404);
       response.end('Not found');
